@@ -2,15 +2,33 @@
 import React, { useEffect, useState, useContext, use } from 'react';
 import {useRouter} from 'next/navigation';
 import { Post } from '../types';
-import { createPost, formatTimeAgo, searchPosts } from '../api';
+import { createPost, editPost, formatTimeAgo, searchPosts } from '../api';
 import { create } from 'domain';
 
 const Board: React.FC = () => {
+    const router = useRouter();
     const [posts, setPosts] = useState<Post[]>([]);
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+
+    useEffect(() => {
+      const user = localStorage.getItem("user");
+      if (!user) {
+        alert("You must signin before");
+        router.push("/");
+        return;
+      }
+
+      const fetchPosts = async () => {
+        const userData = JSON.parse(user);
+        const allPosts = await searchPosts(userData.username);
+        console.log("Fetched posts:", allPosts);
+        setPosts(allPosts);
+      };
+      fetchPosts();
+    }, [posts, router]);
     
     const handleSearch = async (query: string) => {
       // Implement search functionality here
@@ -47,7 +65,7 @@ const Board: React.FC = () => {
         setPosts(allPosts);
       };
       fetchPosts();
-    }, []);
+    }, [posts]);
 
   const SearchIcon: React.FC = () => (
     <svg className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="currentColor" viewBox="0 0 20 20">
@@ -213,6 +231,13 @@ const Board: React.FC = () => {
                       e.preventDefault();
                       // Implement edit post logic here
                       console.log('Editing post:', selectedPost._id);
+                      await editPost(
+                        `${selectedPost._id}`,
+                        e.currentTarget.topic.value,
+                        e.currentTarget.content.value,
+                        e.currentTarget.community.value,
+                        JSON.parse(localStorage.getItem('user')).username
+                      );
                       setShowEditModal(false);
                       setSelectedPost(null);
                     }}
@@ -243,7 +268,7 @@ const Board: React.FC = () => {
                     <input
                       type="text"
                       placeholder="Title"
-                      name='title'
+                      name='topic'
                       defaultValue={selectedPost.topic}
                       className="text-gray-600 placeholder:text-gray-400 w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       required

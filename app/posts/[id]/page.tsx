@@ -18,8 +18,13 @@ const PostDetail: React.FC<{
 
   const handlePostComment = async (postId:string) => {
     // Handle posting comment logic here
-    console.log('Posting comment:', newComment);
     const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+      alert("Please sign in before commenting");
+      setAddComment(false);
+      return;
+    }
+    console.log('Posting comment:', newComment);
     await createComment(postId, newComment, user.username);
     setNewComment('');
   };

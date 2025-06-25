@@ -84,73 +84,76 @@ const Board: React.FC = () => {
                                     </button>
                                     <h2 className="text-black text-xl font-semibold mb-6">Create Post</h2>
                                     <form
-                                    onSubmit={async (e) => {
-                                      e.preventDefault();
-                                      // Implement create post logic here
-                                      await createPost(
-                                        e.currentTarget.title.value,
-                                        e.currentTarget.content.value,
-                                        e.currentTarget.community.value,
-                                        JSON.parse(localStorage.getItem('user')).username
-                                      );
-                                      window.location.reload();
-                                      setShowModal(false);
-                                    }}
-                                    className="space-y-4"
+                                      onSubmit={async (e) => {
+                                        e.preventDefault();
+                                        const user = localStorage.getItem('user');
+                                        if (!user) {
+                                          alert("please sign in before create");
+                                          setShowModal(false);
+                                          return;
+                                        }
+                                        await createPost(
+                                          e.currentTarget.title.value,
+                                          e.currentTarget.content.value,
+                                          e.currentTarget.community.value,
+                                          JSON.parse(user).username
+                                        );
+                                        window.location.reload();
+                                        setShowModal(false);
+                                      }}
+                                      className="space-y-4"
                                     >
-                                    <div className="relative">
-                                      <select
-                                        className="text-gray-600 w-full border border-gray-300 rounded-lg px-4 py-3 appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                        required
-                                        name='community'
-                                      >
-                                        <option value="">Choose a community</option>
-                                        <option>Community</option>
-                                        <option>History</option>
-                                        <option>Food</option>
-                                        <option>Pets</option>
-                                        <option>Health</option>
-                                        <option>Fashion</option>
-                                        <option>Exercise</option>
-                                        <option>Others</option>
-                                      </select>
-                                      <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                        </svg>
+                                      <div className="relative">
+                                        <select
+                                          className="text-gray-600 w-full border border-gray-300 rounded-lg px-4 py-3 appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                          required
+                                          name='community'
+                                        >
+                                          <option value="">Choose a community</option>
+                                          <option>Community</option>
+                                          <option>History</option>
+                                          <option>Food</option>
+                                          <option>Pets</option>
+                                          <option>Health</option>
+                                          <option>Fashion</option>
+                                          <option>Exercise</option>
+                                          <option>Others</option>
+                                        </select>
+                                        <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                                          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                          </svg>
+                                        </div>
                                       </div>
-                                    </div>
-                                    <input
-                                      type="text"
-                                      placeholder="Title"
-                                      name='title'
-                                      className="text-gray-600 placeholder:text-gray-400 w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                      required
-                                    />
-                                    <textarea
-                                      placeholder="What's on your mind..."
-                                      name='content'
-                                      className="text-gray-600 placeholder:text-gray-400 w-full border border-gray-300 rounded-lg px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                      rows={8}
-                                      required
-                                    />
-                                    <div className="flex justify-end space-x-3 pt-4">
-                                      <button
-                                      type="button"
-                                      onClick={() => setShowModal(false)}
-                                      className="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                                    >
-                                      Cancel
-                                    </button>
-                                    <button
-                                      type="submit"
-                                      className="px-6 py-2 bg-[#49A569] hover:bg-[#3B7A52] text-white rounded-lg font-medium transition-colors"
-                                    >
-                                      Post
-                                    </button>
-                
-                                    </div>
-                                    
+                                      <input
+                                        type="text"
+                                        placeholder="Title"
+                                        name='title'
+                                        className="text-gray-600 placeholder:text-gray-400 w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        required
+                                      />
+                                      <textarea
+                                        placeholder="What's on your mind..."
+                                        name='content'
+                                        className="text-gray-600 placeholder:text-gray-400 w-full border border-gray-300 rounded-lg px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        rows={8}
+                                        required
+                                      />
+                                      <div className="flex justify-end space-x-3 pt-4">
+                                        <button
+                                          type="button"
+                                          onClick={() => setShowModal(false)}
+                                          className="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                        >
+                                          Cancel
+                                        </button>
+                                        <button
+                                          type="submit"
+                                          className="px-6 py-2 bg-[#49A569] hover:bg-[#3B7A52] text-white rounded-lg font-medium transition-colors"
+                                        >
+                                          Post
+                                        </button>
+                                      </div>
                                     </form>
                                   </div>
                                   </div>

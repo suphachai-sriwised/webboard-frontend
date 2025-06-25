@@ -56,6 +56,7 @@ export default function RootLayout({
     const accessToken = localStorage.getItem("access_token");
     if (isTokenExpired(accessToken || "")) {
       localStorage.removeItem("access_token");
+      localStorage.removeItem("user");
     }
   }, []);
   const HomeIcon: React.FC = () => (
