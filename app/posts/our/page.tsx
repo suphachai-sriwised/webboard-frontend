@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useContext, use } from 'react';
 import {useRouter} from 'next/navigation';
 import { Post } from '../types';
-import { createPost, editPost, formatTimeAgo, searchPosts } from '../api';
+import { createPost, editPost, deletePost, formatTimeAgo, searchPosts } from '../api';
 import { create } from 'domain';
 
 const Board: React.FC = () => {
@@ -28,7 +28,7 @@ const Board: React.FC = () => {
         setPosts(allPosts);
       };
       fetchPosts();
-    }, [posts, router]);
+    }, []);
     
     const handleSearch = async (query: string) => {
       // Implement search functionality here
@@ -49,23 +49,24 @@ const Board: React.FC = () => {
     };
 
     const confirmDelete = async () => {
-      // Implement delete post logic here
-      console.log('Deleting post:', selectedPost?._id);
+      // if (!selectedPost?._id) return;
+      
+      // Call the delete API
+      await deletePost(selectedPost._id.toString());
+      console.log('Successfully deleted post:', selectedPost._id);
+      
+      // Close modal and reset state
       setShowDeleteModal(false);
       setSelectedPost(null);
+      
       // Refresh posts after deletion
-      window.location.reload();
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        const updatedPosts = await searchPosts(user.username);
+        setPosts(updatedPosts);
+      }
     };
-
-    useEffect(() => {
-      const fetchPosts = async () => {
-        const user = JSON.parse(localStorage.getItem("user"));
-        const allPosts = await searchPosts(user.username);
-        console.log("Fetched posts:", allPosts);
-        setPosts(allPosts);
-      };
-      fetchPosts();
-    }, [posts]);
 
   const SearchIcon: React.FC = () => (
     <svg className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="currentColor" viewBox="0 0 20 20">
@@ -333,7 +334,9 @@ const Board: React.FC = () => {
                       Cancel
                     </button>
                     <button
-                      onClick={confirmDelete}
+                      onClick={async () => {
+                        await confirmDelete()
+                      }}
                       className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
                     >
                       Delete

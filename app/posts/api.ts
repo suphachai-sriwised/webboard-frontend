@@ -72,6 +72,18 @@ export const editPost = async (id: string, title: string, content: string, commu
     return response;
 }
 
+export const deletePost = async (id: string) => {
+    const response = await fetch(`http://localhost:3001/posts/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+        },
+    }).then(res => res.json());
+    console.log("response > ", response)
+    return response;
+}
+
 export const formatTimeAgo = (timestamp: string): string => {
   const now = new Date();
   const past = new Date(timestamp);
